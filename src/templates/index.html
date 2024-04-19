@@ -1,19 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Folium Map with Flask</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet/dist/leaflet.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Route Optimization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #ddd; /* Text color */
+        }
+        .container {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            color: #FFD700; /* Yellow heading */
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #444; /* Dark gray input field */
+            color: #ddd; /* Text color */
+        }
+        button[type="submit"] {
+            padding: 10px;
+            background-color: #FFD700; /* Yellow button */
+            color: black; /* Button text color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"]:hover {
+            background-color: #FFC100; /* Darker yellow on hover */
+        }
+    </style>
 </head>
 <body>
-    <h1>My Folium Map with Flask</h1>
-    
-    <div style="width: 40vw; height: 80vh;">
-    
-        {{ map_html|safe }}
-    
-
+    <div class="container">
+        <h2>Dynamic Route Optimization</h2>
+        <form action="/submit" method="post">
+            <input type="text" name="user_input"  required>
+            <input type="text" name="user_input1" required>
+            <input type="date" name="user_date" required>
+            <button type="submit">Submit</button>
+        </form>
     </div>
-
-    <iframe width="650" height="450" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=7&overlay=wind&product=ecmwf&level=surface&lat=21.164&lon=73.056" frameborder="0"></iframe>
 </body>
 </html>
