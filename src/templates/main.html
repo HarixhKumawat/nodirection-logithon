@@ -47,15 +47,26 @@
         .news-container, .weather-container {
             flex-basis: calc(50% - 20px);
             padding: 20px;
+            height: 60vh;
+            overflow: auto;
             background-color: #333; /* Dark gray container */
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+            margin-bottom: 20px;
         }
 
         .news-container h2, .weather-container h2 {
             color: #FFD700; /* Yellowish text */
-            margin: 0 0 20px;
+            margin-bottom: 20px;
             font-size: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        .news-container h2 img, .weather-container h2 img {
+            margin-right: 10px;
+            height: 30px;
+            width: auto;
         }
 
         .news-item, .weather-item {
@@ -64,7 +75,7 @@
 
         /* Container styles */
         .container {
-            width: 109vw;
+            width: 100%;
             margin: 0 auto;
             padding: 20px;
             border-radius: 10px;
@@ -142,76 +153,103 @@
     </header>
     <div class="main-container">
         <div class="news-container">
-            <div style="display: flex;">
-                <img src="{{ url_for('static', filename='news.png') }}" style="margin: 0 0 20px;"  height="50px" width="auto" alt="">
-                <h2></h2>
-            </div>
-            <div class="news-item">News 1</div>
-            <div class="news-item">News 2</div>
-            <div class="news-item">News 3</div>
+            <h2><img src="{{ url_for('static', filename='news.png') }}" alt="">News</h2>
+            <div class="news-item">{{ newsx }}</div>
             <!-- Add more news items as needed -->
         </div>
         <div class="container">
             <h2>Delivery Performance</h2>
             <div class="metric">
-                <label>Delivery Success Rate:</label>
-                <span>98%</span>
-            </div>
-            <div class="metric">
-                <label>On-time Delivery Rate:</label>
-                <span>95%</span>
+                <label>{{ predication_Make }}</label>
             </div>
             <!-- You can add more metrics here -->
-            <iframe  src="{{ url_for('map') }}" > </iframe>
+            <iframe src="{{ url_for('map') }}"></iframe>
         </div>
         <div class="weather-container">
-            <div style="display: flex;">
-                <img src="{{ url_for('static', filename='wheather.png') }}" style="margin: 0 0 20px;"  height="50px" width="auto" alt="">
-                <h2>Weather Forecast</h2>
-            </div>
-            
-            <iframe style="height:60vh" src="{{ url_for('weather') }}" > </iframe>
+            <h2><img src="{{ url_for('static', filename='weather.png') }}" alt="">Weather Forecast</h2>
+            <iframe src="{{ url_for('weather') }}"></iframe>
             <!-- Add more weather information as needed -->
         </div>
     </div>
-    
     <div class="info-container">
         <div class="info-box">
             <h3>Cost</h3>
-            <iframe src="{{ url_for('cost') }}" > </iframe>
-
-            <p>Cost     : {{ cost }} </p>
+            <iframe src="{{ url_for('cost') }}"></iframe>
+            <p>Cost: {{ cost }}</p>
             <p>Delivery Time (hours): {{ delivery_time }}</p>
-            <p> CO2 Emissions (tons): 2190.77:   {{ carbon }} </p>
-            <p>Fuel Consumption (tons) -{{ fuel }}l</p>
-
-
+            <p>CO2 Emissions (tons): {{ carbon }}</p>
+            <p>Fuel Consumption (tons): -{{ fuel }}l</p>
             <!-- Add more info as needed -->
         </div>
         <div class="info-box">
             <h3>Less Delivery Time</h3>
-            <iframe src="{{ url_for('delivery') }}" > </iframe>
-
-            <p>Cost     : {{ costx }} </p>
+            <iframe src="{{ url_for('delivery') }}"></iframe>
+            <p>Cost: {{ costx }}</p>
             <p>Delivery Time (hours): {{ delivery_time_hours_x }}</p>
-            <p> CO2 Emissions (tons): 2190.77:   {{ carbon_x }} </p>
-            <p>Fuel Consumption (tons) -{{ totoal_fuel_consum }}l</p>
-        
-          
-
+            <p>CO2 Emissions (tons): {{ carbon_x }}</p>
+            <p>Fuel Consumption (tons): -{{ total_fuel_consum }}l</p>
             <!-- Add more info as needed -->
         </div>
         <div class="info-box">
             <h3>Suggested Route</h3>
-            <iframe src="{{ url_for('suggested') }}" > </iframe>
-
-            <p>Cost     : {{ cost }} </p>
+            <iframe src="{{ url_for('suggested') }}"></iframe>
+            <p>Cost: {{ cost }}</p>
             <p>Delivery Time (hours): {{ delivery_time }}</p>
-            <p> CO2 Emissions (tons): 2190.77:   {{ carbon }} </p>
-            <p>Fuel Consumption (tons) -{{ fuel }}l</p>
-        
-       
+            <p>CO2 Emissions (tons): {{ carbon }}</p>
+            <p>Fuel Consumption (tons): -{{ fuel }}l</p>
         </div>
     </div>
+    <div class="container">
+        <h2>Ports Information</h2>
+        <table id="portTable" class="table table-striped">
+            <thead class="bg-dark text-light">
+                <tr>
+                    <th>UN/LOCODE</th>
+                    <th>Main Port Name</th>
+                    <th>Country Code</th>
+                    <th>Region Name</th>
+                    <th>Harbor Size</th>
+                    <th>Harbor Type</th>
+                    <th>Maximum Vessel Length (m)</th>
+                    <th>Maximum Vessel Draft (m)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        var portData = {{ ports_info | tojson | safe }};
+        // Function to display port information
+        function displayPortInfo() {
+            var tableBody = document.querySelector("#portTable tbody");
+    
+            tableBody.innerHTML = "";
+    
+            // Loop through port data and create rows
+            portData.forEach(function(port, index) {
+                var row = document.createElement("tr");
+                // Add zebra striping
+                if (index % 2 === 0) {
+                    row.classList.add("bg-light");
+                }
+                row.innerHTML = `
+                <td>${port['UN/LOCODE']}</td>
+                    <td>${port['Main Port Name']}</td>
+                    <td>${port['Country Code']}</td>
+                    <td>${port['Region Name']}</td>
+                    <td>${port['Harbor Size']}</td>
+                    <td>${port['Harbor Type']}</td>
+                    <td>${port['Maximum Vessel Length (m)']}</td>
+                    <td>${port['Maximum Vessel Draft (m)']}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    
+        // Call the function to display port information
+        displayPortInfo();
+    </script>
 </body>
 </html>

@@ -5,6 +5,11 @@ import folium
 import geopandas as gpd
 import json
 from shapely.geometry import Point
+import prediction
+import news
+
+
+
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -38,11 +43,15 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
+    global finalport
     user_input = request.form['user_input']
     print("User input:", user_input)
 
     user_input1 = request.form['user_input1']
     print("User input:", user_input1)
+
+    prediction.convo.send_message(user_input+""+user_input1)
+    news.convo.send_message(user_input+""+user_input1)
 
     user_date = request.form['user_date']
     print("User input:", user_date)
@@ -100,8 +109,10 @@ def submit():
 
 
     ports = []
+    ports_info = []
     for i in indexes:
         ports.append((ports_gdf.iloc[i]["Latitude"],ports_gdf.iloc[i]["Longitude"]))
+        ports_info.append(ports_gdf.iloc[i].to_dict())
         print(ports_gdf.iloc[i]["Latitude"],ports_gdf.iloc[i]["Longitude"])
         end_coordinates = str(ports_gdf.iloc[i]["Longitude"]) + "," + str(ports_gdf.iloc[i]["Latitude"])
         body = {
@@ -207,6 +218,8 @@ def submit():
     for i in range(len(find_shortest_route)):
      if find_shortest_route[i] == shortest_route:
         if i == 0:
+         global finalport
+         finalport = x
          print("Green x")
          line_colorx= "green"
          folium.PolyLine(x, color="Orange", weight=2.5, opacity=1 ,tooltip=('KM :',lengthx)).add_to(cost)
@@ -348,8 +361,12 @@ def submit():
     print("CO2 Emissions (tons):", total_co2_emissions)
         
 
+    selected_keys = ["UN/LOCODE", 'Main Port Name', 'Country Code', 'Region Name', 'Harbor Size', 'Harbor Type', 'Maximum Vessel Length (m)', 'Maximum Vessel Draft (m)']
 
-    return render_template('main.html',cost=total_fuel_cost, delivery_time=delivery_time_hours, carbon= total_co2_emissions,fuel=total_fuel_consumption,  costx=total_fuel_cost_x, delivery_time_hours_x = delivery_time_hours_x,totoal_fuel_consum =total_fuel_consumption_x,carbon_x =total_co2_emissions_x)
+    selected_ports_info = [{key: port[key] for key in selected_keys} for port in ports_info]
+
+    print(selected_ports_info)
+    return render_template('main.html',cost=total_fuel_cost, delivery_time=delivery_time_hours, carbon= total_co2_emissions,fuel=total_fuel_consumption,  costx=total_fuel_cost_x, delivery_time_hours_x = delivery_time_hours_x,totoal_fuel_consum =total_fuel_consumption_x,carbon_x =total_co2_emissions_x, predication_Make = prediction.convo.last.text, newsx = news.convo.last.text, ports_info=selected_ports_info )
 
 
 @app.route('/weather')

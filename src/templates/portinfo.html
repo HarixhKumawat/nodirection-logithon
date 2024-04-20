@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port Information</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2>Port Information</h2>
+        <table id="portTable" class="table table-striped">
+            <thead class="bg-dark text-light">
+                <tr>
+                    <th>UN/LOCODE</th>
+                    <th>Main Port Name</th>
+                    <th>Country Code</th>
+                    <th>Region Name</th>
+                    <th>Harbor Size</th>
+                    <th>Harbor Type</th>
+                    <th>Maximum Vessel Length (m)</th>
+                    <th>Maximum Vessel Draft (m)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        // Get the port data passed from Flask
+        var portData = {{ ports_info | safe }};
+    
+        // Function to display port information
+        function displayPortInfo() {
+            var tableBody = document.querySelector("#portTable tbody");
+    
+            // Clear existing data
+            tableBody.innerHTML = "";
+    
+            // Loop through port data and create rows
+            portData.forEach(function(port, index) {
+                var row = document.createElement("tr");
+                // Add zebra striping
+                if (index % 2 === 0) {
+                    row.classList.add("bg-light");
+                }
+                row.innerHTML = `
+                <td>${port['UN/LOCODE']}</td>
+                    <td>${port['Main Port Name']}</td>
+                    <td>${port['Country Code']}</td>
+                    <td>${port['Region Name']}</td>
+                    <td>${port['Harbor Size']}</td>
+                    <td>${port['Harbor Type']}</td>
+                    <td>${port['Maximum Vessel Length (m)']}</td>
+                    <td>${port['Maximum Vessel Draft (m)']}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    
+        // Call the function to display port information
+        displayPortInfo();
+    </script>
+</body>
+</html>
