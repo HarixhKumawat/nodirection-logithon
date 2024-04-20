@@ -6,7 +6,10 @@ import geopandas as gpd
 import json
 from shapely.geometry import Point
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
+
+# cost map declaration
+
 
 f = open('ports.json')
 data = json.load(f)
@@ -83,8 +86,17 @@ def submit():
     api_key = "5b3ce3597851110001cf6248bef52906ad594343afbb98f64d4f4fa0"
     failed_coords = []
     # end_coordinates = "72.963540, 18.952151"
+    
+
+
     m = folium.Map(location=(start_coordinates.split(',')[1], start_coordinates.split(',')[0]))
     folium.Marker((start_coordinates.split(',')[1], start_coordinates.split(',')[0]), tooltip=folium.Tooltip(INTERSECTION_ID, permanent=True)).add_to(m)
+
+    cost = folium.Map(location=(start_coordinates.split(',')[1], start_coordinates.split(',')[0]))
+    folium.Marker((start_coordinates.split(',')[1], start_coordinates.split(',')[0]), tooltip=folium.Tooltip(INTERSECTION_ID, permanent=True)).add_to(cost)
+
+    delivery = folium.Map(location=(start_coordinates.split(',')[1], start_coordinates.split(',')[0]))
+    folium.Marker((start_coordinates.split(',')[1], start_coordinates.split(',')[0]), tooltip=folium.Tooltip(INTERSECTION_ID, permanent=True)).add_to(delivery)
 
 
     ports = []
@@ -184,6 +196,7 @@ def submit():
     find_shortest_route = [lengthx,lengthy,lengthz]
 
     shortest_route = (min(find_shortest_route))
+    long_route = (max(find_shortest_route))
     print(shortest_route)
 
 
@@ -196,15 +209,119 @@ def submit():
         if i == 0:
          print("Green x")
          line_colorx= "green"
+         folium.PolyLine(x, color="Orange", weight=2.5, opacity=1 ,tooltip=('KM :',lengthx)).add_to(cost)
+         distance = lengthx
 
+         fuel_consumption_per_km =  0.1
+         fuel_price_per_ton = 500
+         average_speed = 20
+         co2_per_ton_fuel = 3.1
+
+
+
+         total_fuel_cost = distance * fuel_consumption_per_km * fuel_price_per_ton
+         delivery_time_hours = distance / average_speed
+         total_fuel_consumption = distance * fuel_consumption_per_km
+         total_co2_emissions = total_fuel_consumption * co2_per_ton_fuel
+
+
+        
         if i == 1:
          print("Green y")
          line_colorx= "green"
+         folium.PolyLine(y, color="Orange", weight=2.5, opacity=1 ,tooltip=('KM :',lengthx)).add_to(cost)
+
+         distance = lengthy
+
+         fuel_consumption_per_km =  0.1
+         fuel_price_per_ton = 500
+         average_speed = 20
+         co2_per_ton_fuel = 3.1
+
+
+
+         total_fuel_cost = distance * fuel_consumption_per_km * fuel_price_per_ton
+         delivery_time_hours = distance / average_speed
+         total_fuel_consumption = distance * fuel_consumption_per_km
+         total_co2_emissions = total_fuel_consumption * co2_per_ton_fuel
+
         
 
         if i == 2:
          print("Green z")
          line_colorx= "green"
+         folium.PolyLine(z, color="Orange", weight=2.5, opacity=1 ,tooltip=('KM :',lengthx)).add_to(cost)
+         distance = lengthz
+
+         fuel_consumption_per_km =  0.1
+         fuel_price_per_ton = 500
+         average_speed = 20
+         co2_per_ton_fuel = 3.1
+
+
+
+         total_fuel_cost = distance * fuel_consumption_per_km * fuel_price_per_ton
+         delivery_time_hours = distance / average_speed
+         total_fuel_consumption = distance * fuel_consumption_per_km
+         total_co2_emissions = total_fuel_consumption * co2_per_ton_fuel
+
+
+
+    # Best delivery time
+
+    for i in range(len(find_shortest_route)):
+     if find_shortest_route[i] == long_route:
+        if i == 0:
+         print("Green x")
+         line_colorx= "green"
+         folium.PolyLine(x, color="Green", weight=2.5, opacity=1 ,tooltip=('KM :',lengthx)).add_to(delivery)
+
+         distance_x = lengthx
+
+         fuel_consumption_per_km_x = 0.1
+         fuel_price_per_ton_x = 500
+         average_speed_x = 20
+         co2_per_ton_fuel_x = 3.1
+
+         total_fuel_cost_x = distance_x * fuel_consumption_per_km_x * fuel_price_per_ton_x
+         delivery_time_hours_x = distance_x / average_speed_x
+         total_fuel_consumption_x = distance_x * fuel_consumption_per_km_x
+         total_co2_emissions_x = total_fuel_consumption_x * co2_per_ton_fuel_x
+
+
+        if i == 1:
+         print("Green y")
+         line_colorx= "green"
+         folium.PolyLine(y, color="Green", weight=2.5, opacity=1 ,tooltip=('KM :',lengthx)).add_to(delivery)
+
+         distance_x = lengthy
+
+         fuel_consumption_per_km_x = 0.1
+         fuel_price_per_ton_x = 500
+         average_speed_x = 20
+         co2_per_ton_fuel_x = 3.1
+
+         total_fuel_cost_x = distance_x * fuel_consumption_per_km_x * fuel_price_per_ton_x
+         delivery_time_hours_x = distance_x / average_speed_x
+         total_fuel_consumption_x = distance_x * fuel_consumption_per_km_x
+         total_co2_emissions_x = total_fuel_consumption_x * co2_per_ton_fuel_x
+        
+
+        if i == 2:
+         print("Green z")
+         line_colorx= "green"
+         folium.PolyLine(z, color="Green", weight=2.5, opacity=1 ,tooltip=('KM :',lengthx)).add_to(delivery)
+         distance_x = lengthz
+
+         fuel_consumption_per_km_x = 0.1
+         fuel_price_per_ton_x = 500
+         average_speed_x = 20
+         co2_per_ton_fuel_x = 3.1
+
+         total_fuel_cost_x = distance_x * fuel_consumption_per_km_x * fuel_price_per_ton_x
+         delivery_time_hours_x = distance_x / average_speed_x
+         total_fuel_consumption_x = distance_x * fuel_consumption_per_km_x
+         total_co2_emissions_x = total_fuel_consumption_x * co2_per_ton_fuel_x
 
 
     folium.TileLayer('cartodbdark_matter').add_to(m)
@@ -215,15 +332,29 @@ def submit():
     #
 
     m.save("templates/map.html")
+
+    folium.TileLayer('cartodbdark_matter').add_to(cost)
+    cost.save("templates/cost.html")
+
+    folium.TileLayer('cartodbdark_matter').add_to(delivery)
+    delivery.save("templates/delivery.html")
+
+
     print("New Map is return")
 
+    print("\nCost:", total_fuel_cost)
+    print("Delivery Time (hours):", delivery_time_hours)
+    print("Fuel Consumption (tons):", total_fuel_consumption)
+    print("CO2 Emissions (tons):", total_co2_emissions)
         
 
 
-    return render_template('main.html')
+    return render_template('main.html',cost=total_fuel_cost, delivery_time=delivery_time_hours, carbon= total_co2_emissions,fuel=total_fuel_consumption,  costx=total_fuel_cost_x, delivery_time_hours_x = delivery_time_hours_x,totoal_fuel_consum =total_fuel_consumption_x,carbon_x =total_co2_emissions_x)
 
 
-
+@app.route('/weather')
+def weather():
+    return render_template('weather.html')  # Serve the map.html file
 
 @app.route('/map')
 def map():
@@ -231,7 +362,7 @@ def map():
 
 @app.route('/cost')
 def cost():
-    return render_template('cost.html')  # Serve the map.html file
+    return render_template('cost.html' )  # Serve the map.html file
 
 @app.route('/delivery')
 def delivery():

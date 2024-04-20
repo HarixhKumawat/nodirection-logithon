@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map with OpenWeatherMap Tiles</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map { height: 364px; }
+        .btn { margin-right: 10px; }
+        .btn.active { background-color: #007bff; color: white; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="buttons">
+        <button class="btn" id="clouds_new">Clouds</button>
+        <button class="btn" id="precipitation_new">Precipitation</button>
+        <button class="btn" id="pressure_new">Pressure</button>
+        <button class="btn" id="wind_new">Wind</button>
+        <button class="btn" id="temp_new">Temperature</button>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([0, 0], 2); // Initial map center and zoom level
+
+        // Add Dark OpenStreetMap tiles as base layer
+        var darkOSM = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Default weather layer
+        var defaultLayer = 'clouds_new';
+
+        // Function to update the weather layer
+        function updateWeatherLayer(layer) {
+            if (typeof owmTiles !== 'undefined') {
+                map.removeLayer(owmTiles);
+            }
+            owmTiles = L.tileLayer('https://tile.openweathermap.org/map/' + layer + '/{z}/{x}/{y}.png?appid=79c8abdfd14885914b443d445f72143a', {
+                attribution: 'Map data &copy; <a href="https://openweathermap.org">OpenWeatherMap</a>',
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        // Event listeners for buttons
+        document.querySelectorAll('.btn').forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.btn').forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                // Add active class to the clicked button
+                this.classList.add('active');
+                // Update weather layer based on the clicked button's id
+                updateWeatherLayer(this.id);
+            });
+        });
+
+        // Initially set the default weather layer as active
+        document.getElementById(defaultLayer).classList.add('active');
+        updateWeatherLayer(defaultLayer);
+    </script>
+</body>
+</html>
